@@ -4,16 +4,20 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
@@ -85,40 +89,24 @@ fun InfoCollectScreen(
             ) {
                 SwitchButton("HOURLY", false, !salaryType) {
                     salaryType = false
+                    viewModel.updateStatistics(
+                        salaryField.text,
+                        hourlyField.text,
+                        hoursField.text,
+                        vacationField.text,
+                        salaryType
+                    )
                 }
                 SwitchButton("MONTHLY", true, salaryType) {
                     salaryType = true
+                    viewModel.updateStatistics(
+                        salaryField.text,
+                        hourlyField.text,
+                        hoursField.text,
+                        vacationField.text,
+                        salaryType
+                    )
                 }
-//                Button(
-//                    modifier = Modifier.width(150.dp),
-//                    shape = RoundedCornerShape(topStartPercent = 50, bottomStartPercent = 50),
-//                    onClick = {
-//                        salaryType = false
-//                    },
-//                    colors = ButtonDefaults.buttonColors(
-//                        backgroundColor = if (salaryType) Color.Gray else CustomMaterialTheme.colors.primaryVariant
-//                    )
-//                ) {
-//                    Text(text = "Hourly")
-//                }
-//                Button(
-//                    modifier = Modifier
-//                        .border(
-//                            2.dp,
-//                            color = CustomMaterialTheme.colors.primaryVariant,
-//                            RoundedCornerShape(topEndPercent = 50, bottomEndPercent = 50)
-//                        )
-//                        .width(150.dp),
-//                    shape = RoundedCornerShape(topEndPercent = 50, bottomEndPercent = 50),
-//                    onClick = {
-//                        salaryType = true
-//                    },
-//                    colors = ButtonDefaults.buttonColors(
-//                        backgroundColor = if (!salaryType) Color.Transparent else CustomMaterialTheme.colors.primaryVariant
-//                    )
-//                ) {
-//                    Text(text = "Monthly")
-//                }
             }
             if (salaryType) {
                 UserInfoField(
@@ -127,7 +115,7 @@ fun InfoCollectScreen(
                     salaryField,
                     R.drawable.ic_money_24,
                     "Salary",
-                    "Kč/h"
+                    "Kč"
                 ) {
                     salaryField = it
                     viewModel.updateStatistics(
@@ -239,6 +227,7 @@ private fun StatisticsItem(title: String, value: String) {
     }
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 private fun UserInfoField(
     title: String,
@@ -249,13 +238,20 @@ private fun UserInfoField(
     textTrailing: String,
     onChange: (TextFieldValue) -> Unit
 ) {
+    val kc = LocalSoftwareKeyboardController.current
     OutlinedTextField(
         modifier = Modifier.fillMaxWidth(),
         value = value,
         onValueChange = { onChange(it) },
         label = { Text(text = title, textAlign = TextAlign.End) },
         placeholder = { Text(placeholder) },
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number,
+            imeAction = ImeAction.Done),
+        keyboardActions = KeyboardActions(
+            onDone = {
+                kc?.hide()
+            }
+        ),
         leadingIcon = {
             Icon(
                 painterResource(id = iconLeading),
