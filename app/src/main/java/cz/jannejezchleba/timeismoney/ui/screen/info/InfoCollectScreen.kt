@@ -1,5 +1,6 @@
 package cz.jannejezchleba.timeismoney.ui.screen
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -82,30 +83,42 @@ fun InfoCollectScreen(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Button(
-                    modifier = Modifier.width(150.dp),
-                    shape = RoundedCornerShape(topStartPercent = 50, bottomStartPercent = 50),
-                    onClick = {
-                        salaryType = false
-                    },
-                    colors = ButtonDefaults.buttonColors(
-                        backgroundColor = if (salaryType) Color.Gray else CustomMaterialTheme.colors.primaryVariant
-                    )
-                ) {
-                    Text(text = "Hourly")
+                SwitchButton("HOURLY", false, !salaryType) {
+                    salaryType = false
                 }
-                Button(
-                    modifier = Modifier.width(150.dp),
-                    shape = RoundedCornerShape(topEndPercent = 50, bottomEndPercent = 50),
-                    onClick = {
-                        salaryType = true
-                    },
-                    colors = ButtonDefaults.buttonColors(
-                        backgroundColor = if (!salaryType) Color.Gray else CustomMaterialTheme.colors.primaryVariant
-                    )
-                ) {
-                    Text(text = "Monthly")
+                SwitchButton("MONTHLY", true, salaryType) {
+                    salaryType = true
                 }
+//                Button(
+//                    modifier = Modifier.width(150.dp),
+//                    shape = RoundedCornerShape(topStartPercent = 50, bottomStartPercent = 50),
+//                    onClick = {
+//                        salaryType = false
+//                    },
+//                    colors = ButtonDefaults.buttonColors(
+//                        backgroundColor = if (salaryType) Color.Gray else CustomMaterialTheme.colors.primaryVariant
+//                    )
+//                ) {
+//                    Text(text = "Hourly")
+//                }
+//                Button(
+//                    modifier = Modifier
+//                        .border(
+//                            2.dp,
+//                            color = CustomMaterialTheme.colors.primaryVariant,
+//                            RoundedCornerShape(topEndPercent = 50, bottomEndPercent = 50)
+//                        )
+//                        .width(150.dp),
+//                    shape = RoundedCornerShape(topEndPercent = 50, bottomEndPercent = 50),
+//                    onClick = {
+//                        salaryType = true
+//                    },
+//                    colors = ButtonDefaults.buttonColors(
+//                        backgroundColor = if (!salaryType) Color.Transparent else CustomMaterialTheme.colors.primaryVariant
+//                    )
+//                ) {
+//                    Text(text = "Monthly")
+//                }
             }
             if (salaryType) {
                 UserInfoField(
@@ -208,7 +221,7 @@ fun InfoCollectScreen(
                 },
                 colors = customButtonColors(),
             ) {
-                Text(text = "Confirm")
+                Text(text = "CONFIRM")
             }
         }
     }
@@ -256,4 +269,31 @@ private fun UserInfoField(
         colors = customTextFieldColors(),
         singleLine = true
     )
+}
+
+@Composable
+private fun SwitchButton(title: String, isLeftSide: Boolean, isSelected: Boolean, onClick: () -> Unit) {
+    if (isSelected) {
+        Button(
+            modifier = Modifier.width(150.dp),
+            shape = if (isLeftSide) RoundedCornerShape(topEndPercent = 50, bottomEndPercent = 50) else RoundedCornerShape(topStartPercent = 50, bottomStartPercent = 50),
+            onClick = onClick,
+            colors = customButtonColors()
+        ) {
+            Text(text = title)
+        }
+    } else {
+        OutlinedButton(
+            modifier = Modifier.width(150.dp),
+            shape = if (isLeftSide) RoundedCornerShape(topEndPercent = 50, bottomEndPercent = 50) else RoundedCornerShape(topStartPercent = 50, bottomStartPercent = 50),
+            onClick = onClick,
+            colors = ButtonDefaults.buttonColors(
+                backgroundColor = Color.Transparent,
+                contentColor = CustomMaterialTheme.colors.onBackground
+            ),
+            border = BorderStroke(1.dp, CustomMaterialTheme.colors.primaryVariant)
+        ) {
+            Text(text = title)
+        }
+    }
 }
