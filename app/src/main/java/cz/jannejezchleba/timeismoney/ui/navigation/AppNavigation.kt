@@ -62,7 +62,8 @@ private fun BottomAppNavigation(navController: NavController = NavController(Loc
         AppScreens.MoneyScreen,
         AppScreens.TimeScreen,
     )
-    Box(contentAlignment = Alignment.BottomCenter) {
+    Box(contentAlignment = Alignment.BottomCenter,
+        modifier = Modifier.background(Color.Transparent)) {
         BottomNavigation(
             backgroundColor = CustomMaterialTheme.colors.primaryVariant,
             contentColor = CustomMaterialTheme.colors.onPrimary,
