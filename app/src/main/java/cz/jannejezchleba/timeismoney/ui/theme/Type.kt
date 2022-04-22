@@ -26,8 +26,8 @@ val Typography = Typography(
     ),
     subtitle1 = TextStyle(
         fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Thin,
-        fontSize = 22.sp
+        fontWeight = FontWeight.Normal,
+        fontSize = 16.sp
     ),
     body1 = TextStyle(
         fontFamily = FontFamily.Default,
@@ -36,8 +36,8 @@ val Typography = Typography(
     ),
     button = TextStyle(
         fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.SemiBold,
-        fontSize = 18.sp
+        fontWeight = FontWeight.Bold,
+        fontSize = 20.sp,
     ),
     caption = TextStyle(
         fontFamily = FontFamily.Default,

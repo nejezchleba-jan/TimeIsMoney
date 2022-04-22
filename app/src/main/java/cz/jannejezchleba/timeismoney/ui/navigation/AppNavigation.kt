@@ -10,6 +10,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -18,7 +19,6 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import cz.jannejezchleba.timeismoney.R
-import cz.jannejezchleba.timeismoney.ui.screen.AddItemScreen
 import cz.jannejezchleba.timeismoney.ui.theme.CustomMaterialTheme
 
 @Composable
@@ -31,6 +31,7 @@ fun AppNavigation() {
             //choose routes where top nav is hidden
             when (navBackStackEntry?.destination?.route) {
                 AppScreens.SplashScreen.name -> {}
+                AppScreens.InfoCollectScreen.name -> {}
                 else -> TopAppNavigation(
                     navController,
                     AppScreens.getNavigationItem(navBackStackEntry?.destination?.route).title
@@ -47,6 +48,7 @@ fun AppNavigation() {
             //choose routes where bottom nav is hidden
             when (navBackStackEntry?.destination?.route) {
                 AppScreens.SplashScreen.name -> {}
+                AppScreens.InfoCollectScreen.name -> {}
                 else -> BottomAppNavigation(navController)
             }
         }
@@ -104,7 +106,9 @@ private fun BottomAppNavigation(navController: NavController = NavController(Loc
 
 @Composable
 private fun BottomFloatingButton(navController: NavController = NavController(LocalContext.current)) {
-    Column {
+    Column(
+        Modifier.background(Color.Transparent)
+    ) {
         Surface(
             modifier = Modifier
                 .size(80.dp)
@@ -114,9 +118,11 @@ private fun BottomFloatingButton(navController: NavController = NavController(Lo
         ) {
             FloatingActionButton(
                 onClick = { navController.navigate(AppScreens.AddItemScreen.name) },
-                backgroundColor = CustomMaterialTheme.colors.secondary
+                backgroundColor = CustomMaterialTheme.colors.secondary,
+                elevation = FloatingActionButtonDefaults.elevation(8.dp)
             ) {
                 Icon(
+                    modifier = Modifier.size(40.dp),
                     painter = painterResource(id = R.drawable.ic_add_24),
                     contentDescription = "Add item",
                     tint = CustomMaterialTheme.colors.onPrimary
@@ -132,6 +138,7 @@ private fun BottomFloatingButton(navController: NavController = NavController(Lo
 @Composable
 private fun TopAppNavigation(navController: NavController = NavController(LocalContext.current), currentScreenTitle: String) {
     TopAppBar(
+        backgroundColor = CustomMaterialTheme.colors.primaryVariant,
         title = {
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
