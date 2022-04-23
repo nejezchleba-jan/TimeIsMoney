@@ -27,39 +27,34 @@ import cz.jannejezchleba.timeismoney.ui.theme.CustomMaterialTheme
 fun AppNavigation() {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val shouldShowNavigation = when (navBackStackEntry?.destination?.route) {
+        AppScreens.SplashScreen.name -> false
+        AppScreens.InfoCollectScreen.name -> false
+        else -> true
+    }
 
     Scaffold(
         topBar = {
-            //choose routes where top nav is hidden
-            when (navBackStackEntry?.destination?.route) {
-                AppScreens.SplashScreen.name -> {}
-                AppScreens.InfoCollectScreen.name -> {}
-                else -> TopAppNavigation(
+            if (shouldShowNavigation) {
+                TopAppNavigation(
                     navController,
                     AppScreens.getNavigationItem(navBackStackEntry?.destination?.route).title
                 )
             }
-
         },
         content = { padding ->
             AppNavigationGraph(navController)
         },
         floatingActionButton = {
-            when (navBackStackEntry?.destination?.route) {
-                AppScreens.SplashScreen.name -> {}
-                AppScreens.InfoCollectScreen.name -> {}
-                else -> BottomFloatingButton(navController)
+            if (shouldShowNavigation) {
+                BottomFloatingButton(navController)
             }
         },
         isFloatingActionButtonDocked = true,
         floatingActionButtonPosition = FabPosition.Center,
         bottomBar = {
-
-            //choose routes where bottom nav is hidden
-            when (navBackStackEntry?.destination?.route) {
-                AppScreens.SplashScreen.name -> {}
-                AppScreens.InfoCollectScreen.name -> {}
-                else -> BottomAppNavigation(navController)
+            if (shouldShowNavigation) {
+                BottomAppNavigation(navController)
             }
         }
     )

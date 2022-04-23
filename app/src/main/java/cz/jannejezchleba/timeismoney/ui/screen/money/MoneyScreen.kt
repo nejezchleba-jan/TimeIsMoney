@@ -19,7 +19,7 @@ import cz.jannejezchleba.timeismoney.R
 import cz.jannejezchleba.timeismoney.ui.component.StatisticsItem
 import cz.jannejezchleba.timeismoney.ui.component.SwitchButton
 import cz.jannejezchleba.timeismoney.ui.component.UserInfoField
-import cz.jannejezchleba.timeismoney.ui.screen.info.InfoCollectViewModel
+import cz.jannejezchleba.timeismoney.ui.screen.money.InfoCollectViewModel
 import cz.jannejezchleba.timeismoney.ui.theme.CustomMaterialTheme
 import cz.jannejezchleba.timeismoney.util.DataStoreHelper
 import kotlinx.coroutines.launch

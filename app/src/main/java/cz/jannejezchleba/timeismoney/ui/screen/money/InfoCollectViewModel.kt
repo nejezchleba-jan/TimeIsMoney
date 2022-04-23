@@ -1,4 +1,4 @@
-package cz.jannejezchleba.timeismoney.ui.screen.info
+package cz.jannejezchleba.timeismoney.ui.screen.money
 
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
