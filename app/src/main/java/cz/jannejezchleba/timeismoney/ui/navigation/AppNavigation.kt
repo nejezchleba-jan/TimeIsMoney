@@ -101,7 +101,7 @@ private fun BottomAppNavigation(navController: NavController = NavController(Loc
                 )
             }
         }
-        BottomFloatingButton()
+        BottomFloatingButton(navController)
     }
 }
 

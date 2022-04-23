@@ -58,13 +58,18 @@ private fun GoalItem() {
     ) {
         Column {
             Row(
-                horizontalArrangement = Arrangement.Center,
+                horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .padding(CustomMaterialTheme.paddings.smallPadding)
                     .fillMaxWidth()
             ) {
-                Text(text = "Trip to the Moon".uppercase())
+                Icon(
+                    painter = painterResource(R.drawable.ic_bookmark_24),
+                    contentDescription = "Currently pinned",
+                    tint = CustomMaterialTheme.colors.secondary
+                )
+                Text(text = "Pinned on 22.04.2022")
             }
             Divider()
             Box {
@@ -90,20 +95,7 @@ private fun GoalItem() {
                     }
                 }
             }
-            Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .padding(CustomMaterialTheme.paddings.smallPadding)
-                    .fillMaxWidth()
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_bookmark_24),
-                    contentDescription = "Currently pinned",
-                    tint = CustomMaterialTheme.colors.secondary
-                )
-                Text(text = "Pinned on 22.04.2022")
-            }
+
         }
     }
 }

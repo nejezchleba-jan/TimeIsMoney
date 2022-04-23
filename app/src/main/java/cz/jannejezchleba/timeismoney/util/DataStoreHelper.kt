@@ -18,6 +18,7 @@ class DataStoreHelper(private val context: Context) {
         val USER_VACATION_DAYS = stringPreferencesKey("user_vacation_days")
         val USER_WORK_HOURS= stringPreferencesKey("user_work_hours")
         val USER_HOUR_RATE= stringPreferencesKey("user_hours_rate")
+        val USER_SALARY_TYPE= booleanPreferencesKey("user_salary_type")
     }
 
     val getUserIsNew: Flow<Boolean?> = context.dataStore.data
@@ -72,6 +73,17 @@ class DataStoreHelper(private val context: Context) {
     suspend fun saveHourRate(hourRate: String) {
         context.dataStore.edit { preferences ->
             preferences[USER_HOUR_RATE] = hourRate
+        }
+    }
+
+    val getSalaryType: Flow<Boolean?> = context.dataStore.data
+        .map { preferences ->
+            preferences[USER_SALARY_TYPE] ?: true
+        }
+
+    suspend fun saveSalaryType(isSalary: Boolean) {
+        context.dataStore.edit { preferences ->
+            preferences[USER_SALARY_TYPE] = isSalary
         }
     }
 }

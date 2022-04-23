@@ -1,35 +1,26 @@
 package cz.jannejezchleba.timeismoney.ui.screen
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import cz.jannejezchleba.timeismoney.R
+import cz.jannejezchleba.timeismoney.ui.component.StatisticsItem
+import cz.jannejezchleba.timeismoney.ui.component.SwitchButton
+import cz.jannejezchleba.timeismoney.ui.component.UserInfoField
 import cz.jannejezchleba.timeismoney.ui.navigation.AppScreens
 import cz.jannejezchleba.timeismoney.ui.screen.info.InfoCollectViewModel
 import cz.jannejezchleba.timeismoney.ui.styles.customButtonColors
-import cz.jannejezchleba.timeismoney.ui.styles.customTextFieldColors
 import cz.jannejezchleba.timeismoney.ui.theme.CustomMaterialTheme
 import cz.jannejezchleba.timeismoney.util.DataStoreHelper
 import kotlinx.coroutines.launch
@@ -51,10 +42,10 @@ fun InfoCollectScreen(
     val vacationStats by viewModel.vacationStats.collectAsState()
 
     var salaryType by remember { mutableStateOf(false) }
-    var salaryField by remember { mutableStateOf(TextFieldValue("")) }
-    var hourlyField by remember { mutableStateOf(TextFieldValue("")) }
-    var hoursField by remember { mutableStateOf(TextFieldValue("")) }
-    var vacationField by remember { mutableStateOf(TextFieldValue("")) }
+    var salaryField by remember { mutableStateOf("")}
+    var hourlyField by remember { mutableStateOf("") }
+    var hoursField by remember { mutableStateOf("") }
+    var vacationField by remember { mutableStateOf("") }
 
     Surface(
         color = MaterialTheme.colors.background,
@@ -90,20 +81,20 @@ fun InfoCollectScreen(
                 SwitchButton("HOURLY", false, !salaryType) {
                     salaryType = false
                     viewModel.updateStatistics(
-                        salaryField.text,
-                        hourlyField.text,
-                        hoursField.text,
-                        vacationField.text,
+                        salaryField,
+                        hourlyField,
+                        hoursField,
+                        vacationField,
                         salaryType
                     )
                 }
                 SwitchButton("MONTHLY", true, salaryType) {
                     salaryType = true
                     viewModel.updateStatistics(
-                        salaryField.text,
-                        hourlyField.text,
-                        hoursField.text,
-                        vacationField.text,
+                        salaryField,
+                        hourlyField,
+                        hoursField,
+                        vacationField,
                         salaryType
                     )
                 }
@@ -119,11 +110,11 @@ fun InfoCollectScreen(
                 ) {
                     salaryField = it
                     viewModel.updateStatistics(
-                        salaryField.text,
-                        hourlyField.text,
-                        hoursField.text,
-                        vacationField.text,
-                        type = salaryType
+                        salaryField,
+                        hourlyField,
+                        hoursField,
+                        vacationField,
+                        salaryType
                     )
                 }
             } else {
@@ -137,11 +128,11 @@ fun InfoCollectScreen(
                 ) {
                     hourlyField = it
                     viewModel.updateStatistics(
-                        salaryField.text,
-                        hourlyField.text,
-                        hoursField.text,
-                        vacationField.text,
-                        type = salaryType
+                        salaryField,
+                        hourlyField,
+                        hoursField,
+                        vacationField,
+                        salaryType
                     )
                 }
             }
@@ -155,10 +146,10 @@ fun InfoCollectScreen(
             ) {
                 hoursField = it
                 viewModel.updateStatistics(
-                    salaryField.text,
-                    hourlyField.text,
-                    hoursField.text,
-                    vacationField.text,
+                    salaryField,
+                    hourlyField,
+                    hoursField,
+                    vacationField,
                     salaryType
                 )
             }
@@ -172,10 +163,10 @@ fun InfoCollectScreen(
             ) {
                 vacationField = it
                 viewModel.updateStatistics(
-                    salaryField.text,
-                    hourlyField.text,
-                    hoursField.text,
-                    vacationField.text,
+                    salaryField,
+                    hourlyField,
+                    hoursField,
+                    vacationField,
                     salaryType
                 )
             }
@@ -196,12 +187,13 @@ fun InfoCollectScreen(
                 onClick = {
                     scope.launch {
                         if (salaryType) {
-                            dataStore.saveSalary(salaryField.text)
+                            dataStore.saveSalary(salaryField)
                         } else {
-                            dataStore.saveHourRate(hourlyField.text)
+                            dataStore.saveHourRate(hourlyField)
                         }
-                        dataStore.saveHours(hoursField.text)
-                        dataStore.saveVacation(vacationField.text)
+                        dataStore.saveHours(hoursField)
+                        dataStore.saveVacation(vacationField)
+                        dataStore.saveSalaryType(salaryType)
                         dataStore.saveUserIsNew(false)
                         navController.backQueue.clear()
                         navController.navigate(AppScreens.HomeScreen.name)
@@ -211,85 +203,6 @@ fun InfoCollectScreen(
             ) {
                 Text(text = "CONFIRM")
             }
-        }
-    }
-}
-
-@Composable
-private fun StatisticsItem(title: String, value: String) {
-    Row(
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Text(text = title, style = CustomMaterialTheme.typography.body1)
-        Text(text = value, fontWeight = FontWeight.Bold)
-    }
-}
-
-@OptIn(ExperimentalComposeUiApi::class)
-@Composable
-private fun UserInfoField(
-    title: String,
-    placeholder: String,
-    value: TextFieldValue,
-    iconLeading: Int,
-    iconDesc: String,
-    textTrailing: String,
-    onChange: (TextFieldValue) -> Unit
-) {
-    val kc = LocalSoftwareKeyboardController.current
-    OutlinedTextField(
-        modifier = Modifier.fillMaxWidth(),
-        value = value,
-        onValueChange = { onChange(it) },
-        label = { Text(text = title, textAlign = TextAlign.End) },
-        placeholder = { Text(placeholder) },
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number,
-            imeAction = ImeAction.Done),
-        keyboardActions = KeyboardActions(
-            onDone = {
-                kc?.hide()
-            }
-        ),
-        leadingIcon = {
-            Icon(
-                painterResource(id = iconLeading),
-                tint = CustomMaterialTheme.colors.primaryVariant,
-                contentDescription = iconDesc
-            )
-        },
-        trailingIcon = {
-            Text(textTrailing)
-        },
-        colors = customTextFieldColors(),
-        singleLine = true
-    )
-}
-
-@Composable
-private fun SwitchButton(title: String, isLeftSide: Boolean, isSelected: Boolean, onClick: () -> Unit) {
-    if (isSelected) {
-        Button(
-            modifier = Modifier.width(150.dp),
-            shape = if (isLeftSide) RoundedCornerShape(topEndPercent = 50, bottomEndPercent = 50) else RoundedCornerShape(topStartPercent = 50, bottomStartPercent = 50),
-            onClick = onClick,
-            colors = customButtonColors()
-        ) {
-            Text(text = title)
-        }
-    } else {
-        OutlinedButton(
-            modifier = Modifier.width(150.dp),
-            shape = if (isLeftSide) RoundedCornerShape(topEndPercent = 50, bottomEndPercent = 50) else RoundedCornerShape(topStartPercent = 50, bottomStartPercent = 50),
-            onClick = onClick,
-            colors = ButtonDefaults.buttonColors(
-                backgroundColor = Color.Transparent,
-                contentColor = CustomMaterialTheme.colors.onBackground
-            ),
-            border = BorderStroke(1.dp, CustomMaterialTheme.colors.primaryVariant)
-        ) {
-            Text(text = title)
         }
     }
 }
