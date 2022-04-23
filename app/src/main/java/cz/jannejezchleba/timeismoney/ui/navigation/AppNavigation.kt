@@ -1,15 +1,16 @@
 package cz.jannejezchleba.timeismoney.ui.navigation
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -21,6 +22,7 @@ import androidx.navigation.compose.rememberNavController
 import cz.jannejezchleba.timeismoney.R
 import cz.jannejezchleba.timeismoney.ui.theme.CustomMaterialTheme
 
+@Preview
 @Composable
 fun AppNavigation() {
     val navController = rememberNavController()
@@ -40,11 +42,19 @@ fun AppNavigation() {
 
         },
         content = { padding ->
-            Box(modifier = Modifier.padding(padding)) {
-                AppNavigationGraph(navController)
+            AppNavigationGraph(navController)
+        },
+        floatingActionButton = {
+            when (navBackStackEntry?.destination?.route) {
+                AppScreens.SplashScreen.name -> {}
+                AppScreens.InfoCollectScreen.name -> {}
+                else -> BottomFloatingButton(navController)
             }
         },
+        isFloatingActionButtonDocked = true,
+        floatingActionButtonPosition = FabPosition.Center,
         bottomBar = {
+
             //choose routes where bottom nav is hidden
             when (navBackStackEntry?.destination?.route) {
                 AppScreens.SplashScreen.name -> {}
@@ -55,21 +65,21 @@ fun AppNavigation() {
     )
 }
 
-@Preview
+
 @Composable
 private fun BottomAppNavigation(navController: NavController = NavController(LocalContext.current)) {
     val screens = listOf(
         AppScreens.MoneyScreen,
         AppScreens.TimeScreen,
     )
-    Box(contentAlignment = Alignment.BottomCenter,
-        modifier = Modifier.background(Color.Transparent)) {
+    BottomAppBar(
+        cutoutShape = RoundedCornerShape(50),
+        modifier = Modifier
+            .background(Color.Transparent)
+    ) {
         BottomNavigation(
             backgroundColor = CustomMaterialTheme.colors.primaryVariant,
             contentColor = CustomMaterialTheme.colors.onPrimary,
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(15.dp, 15.dp, 0.dp, 0.dp))
         ) {
             val navBackStackEntry by navController.currentBackStackEntryAsState()
             val currentRoute = navBackStackEntry?.destination?.route
@@ -87,13 +97,11 @@ private fun BottomAppNavigation(navController: NavController = NavController(Loc
                     },
                     selectedContentColor = CustomMaterialTheme.colors.onPrimary,
                     unselectedContentColor = CustomMaterialTheme.colors.onPrimary.copy(0.6f),
-                    alwaysShowLabel = false,
+                    alwaysShowLabel = true,
                     selected = currentRoute == screen.name,
                     onClick = {
                         navController.navigate(screen.name) {
-                            navController.graph.startDestinationRoute?.let {
-                                popUpTo(AppScreens.HomeScreen.name)
-                            }
+                            popUpTo(AppScreens.HomeScreen.name)
                             launchSingleTop = true
                             restoreState = true
                         }
@@ -101,43 +109,30 @@ private fun BottomAppNavigation(navController: NavController = NavController(Loc
                 )
             }
         }
-        BottomFloatingButton(navController)
     }
 }
 
 @Composable
 private fun BottomFloatingButton(navController: NavController = NavController(LocalContext.current)) {
-    Column(
-        Modifier.background(Color.Transparent)
+    FloatingActionButton(
+        onClick = { navController.navigate(AppScreens.AddItemScreen.name) },
+        backgroundColor = CustomMaterialTheme.colors.secondary,
+        shape = RoundedCornerShape(50)
     ) {
-        Surface(
-            modifier = Modifier
-                .size(80.dp)
-                .clip(CircleShape)
-                .background(CustomMaterialTheme.colors.background)
-                .padding(10.dp),
-        ) {
-            FloatingActionButton(
-                onClick = { navController.navigate(AppScreens.AddItemScreen.name) },
-                backgroundColor = CustomMaterialTheme.colors.secondary,
-                elevation = FloatingActionButtonDefaults.elevation(8.dp)
-            ) {
-                Icon(
-                    modifier = Modifier.size(40.dp),
-                    painter = painterResource(id = R.drawable.ic_add_24),
-                    contentDescription = "Add item",
-                    tint = CustomMaterialTheme.colors.onPrimary
-                )
-            }
-        }
-        Spacer(modifier = Modifier.height(15.dp))
+        Icon(
+            modifier = Modifier.size(40.dp),
+            painter = painterResource(id = R.drawable.ic_add_24),
+            contentDescription = "Add item",
+            tint = CustomMaterialTheme.colors.onPrimary
+        )
     }
-
-
 }
 
 @Composable
-private fun TopAppNavigation(navController: NavController = NavController(LocalContext.current), currentScreenTitle: String) {
+private fun TopAppNavigation(
+    navController: NavController = NavController(LocalContext.current),
+    currentScreenTitle: String
+) {
     TopAppBar(
         backgroundColor = CustomMaterialTheme.colors.primaryVariant,
         title = {
@@ -148,7 +143,8 @@ private fun TopAppNavigation(navController: NavController = NavController(LocalC
             ) {
                 Text(currentScreenTitle)
                 IconButton(onClick = {
-                    navController.navigate(AppScreens.HomeScreen.name) }) {
+                    navController.navigate(AppScreens.HomeScreen.name)
+                }) {
                     val navItem = AppScreens.getNavigationItem(AppScreens.HomeScreen.name)
                     Icon(
                         painterResource(id = navItem.iconResource),

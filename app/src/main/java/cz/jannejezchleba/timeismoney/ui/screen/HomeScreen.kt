@@ -78,7 +78,7 @@ private fun GoalItem() {
                     contentDescription = "Image"
                 )
                 Box(
-                    contentAlignment = Alignment.Center,
+                    contentAlignment = Alignment.CenterEnd,
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
                         .fillMaxWidth()
@@ -90,8 +90,21 @@ private fun GoalItem() {
                         )
                         .padding(start = 8.dp, end = 8.dp, bottom = 8.dp, top = 16.dp),
                 ) {
-                    OutlinedButton(onClick = { /*TODO*/ }, enabled = false, shape = RoundedCornerShape(50), colors = ButtonDefaults.buttonColors(disabledContentColor = CustomMaterialTheme.colors.primaryVariant)) {
-                        Text("20 DAYS")
+                    OutlinedButton(
+                        onClick = {},
+                        enabled = false,
+                        shape = RoundedCornerShape(50),
+                        colors = ButtonDefaults.buttonColors(disabledContentColor = CustomMaterialTheme.colors.primaryVariant)) {
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(10.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_time_24),
+                                contentDescription = "Currently left",
+                            )
+                            Text(text = "20 DAYS")
+                        }
                     }
                 }
             }
