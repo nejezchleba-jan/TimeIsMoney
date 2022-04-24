@@ -1,17 +1,12 @@
 package cz.jannejezchleba.timeismoney.ui.navigation
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -43,7 +38,9 @@ fun AppNavigation() {
             }
         },
         content = { padding ->
-            AppNavigationGraph(navController)
+            Box(modifier = Modifier.padding(padding)) {
+                AppNavigationGraph(navController)
+            }
         },
         floatingActionButton = {
             if (shouldShowNavigation) {
@@ -67,14 +64,11 @@ private fun BottomAppNavigation(navController: NavController = NavController(Loc
         AppScreens.MoneyScreen,
         AppScreens.TimeScreen,
     )
-    BottomAppBar(
-        cutoutShape = RoundedCornerShape(50),
-        modifier = Modifier
-            .background(Color.Transparent)
-    ) {
+    BottomAppBar {
         BottomNavigation(
             backgroundColor = CustomMaterialTheme.colors.primaryVariant,
             contentColor = CustomMaterialTheme.colors.onPrimary,
+            modifier = Modifier.fillMaxWidth()
         ) {
             val navBackStackEntry by navController.currentBackStackEntryAsState()
             val currentRoute = navBackStackEntry?.destination?.route
@@ -110,7 +104,7 @@ private fun BottomAppNavigation(navController: NavController = NavController(Loc
 @Composable
 private fun BottomFloatingButton(navController: NavController = NavController(LocalContext.current)) {
     FloatingActionButton(
-        onClick = { navController.navigate(AppScreens.AddItemScreen.name) },
+        onClick = { navController.navigate(AppScreens.AddGoalScreen.name) },
         backgroundColor = CustomMaterialTheme.colors.secondary,
         shape = RoundedCornerShape(50)
     ) {

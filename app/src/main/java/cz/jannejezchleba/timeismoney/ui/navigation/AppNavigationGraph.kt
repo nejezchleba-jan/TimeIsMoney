@@ -24,8 +24,8 @@ fun AppNavigationGraph(navController: NavHostController) {
         composable(AppScreens.TimeScreen.name) {
             TimeScreen(navController)
         }
-        composable(AppScreens.AddItemScreen.name) {
-            AddItemScreen(navController)
+        composable(AppScreens.AddGoalScreen.name) {
+            AddGoalScreen(navController)
         }
     }
 }

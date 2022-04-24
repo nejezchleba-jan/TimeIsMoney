@@ -13,55 +13,30 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
 import cz.jannejezchleba.timeismoney.R
 import cz.jannejezchleba.timeismoney.ui.styles.customButtonColors
 import cz.jannejezchleba.timeismoney.ui.theme.CustomMaterialTheme
+
+@Preview
 @Composable
-fun TimeItem(title: String, imagePath: String = "", price: Int, timeLeft: Int) {
+fun TimeItem(title: String = "", imagePath: String = "", price: Int = 0, timeLeft: Int = 0) {
     Card(
+        modifier = Modifier.background(Color.Transparent),
         elevation = 5.dp,
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+            verticalArrangement = Arrangement.spacedBy(0.dp),
+            modifier = Modifier.background(Color.Transparent)
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center,
-                modifier = Modifier.fillMaxWidth().padding(0.dp)
-            ) {
-                Button(
-                    modifier = Modifier.fillMaxWidth(0.5f).padding(0.dp),
-                    shape = RoundedCornerShape(topStartPercent = 50),
-                    onClick = { },
-                    colors = customButtonColors()
-                ) {
-                    Icon(painter = painterResource(id = R.drawable.ic_edit_24,),
-                        contentDescription = "Edit")
-                }
-                Divider(
-                    color = CustomMaterialTheme.colors.background,
-                    modifier = Modifier
-                        .height(5.dp)
-                        .width(2.dp)
-                )
-                Button(
-                    modifier = Modifier.fillMaxWidth(1f).padding(0.dp),
-                    shape = RoundedCornerShape(topEndPercent = 50),
-                    onClick = { },
-                    colors = customButtonColors()
-                ) {
-                    Icon(painter = painterResource(id = R.drawable.ic_bookmark_24,),
-                        contentDescription = "Edit")
-                }
-            }
-            Box(contentAlignment = Alignment.Center) {
+            Box {
                 Image(
                     painter = painterResource(id = R.drawable.example_img),
                     contentDescription = title,
-                    contentScale = ContentScale.Fit
+                    contentScale = ContentScale.Inside
                 )
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -125,6 +100,35 @@ fun TimeItem(title: String, imagePath: String = "", price: Int, timeLeft: Int) {
                         title,
                         style = CustomMaterialTheme.typography.h4,
                         color = Color.White
+                    )
+                }
+            }
+
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(1.dp),
+                verticalAlignment = Alignment.Bottom,
+                modifier = Modifier.height(40.dp)
+            ) {
+                Button(
+                    modifier = Modifier.fillMaxWidth(0.5f),
+                    shape = RoundedCornerShape(0),
+                    onClick = { },
+                    colors = customButtonColors()
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_edit_24),
+                        contentDescription = "Edit"
+                    )
+                }
+                Button(
+                    modifier = Modifier.fillMaxWidth(1f),
+                    shape = RoundedCornerShape(0),
+                    onClick = { },
+                    colors = customButtonColors()
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_bookmark_24),
+                        contentDescription = "Edit"
                     )
                 }
             }

@@ -31,6 +31,7 @@ fun GoalItem(title: String, imagePath: String = "", price: Int, timeLeft: Int) {
 private fun DefaultGoal(title: String, price: Int, timeLeft: Int) {
     Card(
         elevation = 5.dp,
+        backgroundColor = Color.White,
         border = BorderStroke(1.dp, CustomMaterialTheme.colors.primaryVariant)
     ) {
         Column {

@@ -1,5 +1,6 @@
 package cz.jannejezchleba.timeismoney.ui.screen
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -9,12 +10,12 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import cz.jannejezchleba.timeismoney.R
+import cz.jannejezchleba.timeismoney.ui.component.HeaderCard
 import cz.jannejezchleba.timeismoney.ui.component.StatisticsItem
 import cz.jannejezchleba.timeismoney.ui.component.SwitchButton
 import cz.jannejezchleba.timeismoney.ui.component.UserInfoField
@@ -60,19 +61,7 @@ fun InfoCollectScreen(
             verticalArrangement = Arrangement.spacedBy(20.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Column(
-                verticalArrangement = Arrangement.spacedBy(10.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Icon(
-                    modifier = Modifier.size(60.dp),
-                    painter = painterResource(id = R.drawable.ic_person_pin_24),
-                    contentDescription = "User info",
-                    tint = CustomMaterialTheme.colors.primaryVariant
-                )
-                Text(text = "User info", style = CustomMaterialTheme.typography.h6)
-            }
-
+            HeaderCard("USER INFO")
             Row(
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically,
@@ -171,12 +160,26 @@ fun InfoCollectScreen(
                 )
             }
             Divider()
-            Text(text = "Summary", style = CustomMaterialTheme.typography.h6)
-            StatisticsItem("Daily rate (avg.)", dailyStats)
-            StatisticsItem("Weekly rate (avg.)", weekStats)
-            StatisticsItem("Monthly rate (avg.)", monthStats)
-            StatisticsItem("Yearly rate (avg.)", yearStats)
-            StatisticsItem("Vacation value (avg.)", vacationStats)
+            HeaderCard("SUMMARY")
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                elevation = 5.dp,
+                border = BorderStroke(1.dp, color = CustomMaterialTheme.colors.primary)
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(CustomMaterialTheme.paddings.defaultPadding),
+                    verticalArrangement = Arrangement.spacedBy(10.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    StatisticsItem("Daily rate (avg.)", dailyStats)
+                    StatisticsItem("Weekly rate (avg.)", weekStats)
+                    StatisticsItem("Monthly rate (avg.)", monthStats)
+                    StatisticsItem("Yearly rate (avg.)", yearStats)
+                    StatisticsItem("Vacation value (avg.)", vacationStats)
+                }
+            }
             Spacer(modifier = Modifier.weight(1f))
             Button(
                 modifier = Modifier
