@@ -80,6 +80,14 @@ dependencies {
     //Hilt
     implementation "com.google.dagger:hilt-android:2.38.1"
     kapt "com.google.dagger:hilt-compiler:2.38.1"
+
     //DataStore
     implementation "androidx.datastore:datastore-preferences:1.0.0"
+
+    //RoomDB
+    implementation "androidx.room:room-runtime:2.4.2"
+    implementation 'androidx.room:room-ktx:2.4.2'
+    implementation "androidx.compose.runtime:runtime-livedata:1.1.1"
+    annotationProcessor "androidx.room:room-compiler:2.4.2"
+    kapt "androidx.room:room-compiler:2.4.2"
 }
