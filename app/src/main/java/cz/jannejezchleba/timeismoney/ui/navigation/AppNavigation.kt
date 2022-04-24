@@ -1,6 +1,9 @@
 package cz.jannejezchleba.timeismoney.ui.navigation
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
@@ -22,35 +25,57 @@ import cz.jannejezchleba.timeismoney.ui.theme.CustomMaterialTheme
 fun AppNavigation() {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val shouldShowNavigation = when (navBackStackEntry?.destination?.route) {
+    val shouldShowBottomNavigation = when (navBackStackEntry?.destination?.route) {
         AppScreens.SplashScreen.name -> false
         AppScreens.InfoCollectScreen.name -> false
+        AppScreens.AddGoalScreen.name -> false
+        AppScreens.EditGoalScreen.name -> false
         else -> true
+    }
+
+    val shouldShowTopNavigation = when (navBackStackEntry?.destination?.route) {
+        AppScreens.SplashScreen.name -> false
+        AppScreens.InfoCollectScreen.name -> false
+        AppScreens.AddGoalScreen.name -> false
+        AppScreens.EditGoalScreen.name -> false
+        else -> true
+    }
+
+    val shouldShowTopNavigationWithClose = when (navBackStackEntry?.destination?.route) {
+        AppScreens.AddGoalScreen.name -> true
+        AppScreens.EditGoalScreen.name -> true
+        else -> false
     }
 
     Scaffold(
         topBar = {
-            if (shouldShowNavigation) {
+            if (shouldShowTopNavigation) {
                 TopAppNavigation(
+                    navController,
+                    AppScreens.getNavigationItem(navBackStackEntry?.destination?.route).title
+                )
+            } else if (shouldShowTopNavigationWithClose) {
+                TopAppNavigationWithClose(
                     navController,
                     AppScreens.getNavigationItem(navBackStackEntry?.destination?.route).title
                 )
             }
         },
         content = { padding ->
-            Box(modifier = Modifier.padding(padding)) {
-                AppNavigationGraph(navController)
-            }
+//            Box(modifier = Modifier.padding(padding)) {
+               AppNavigationGraph(navController)
+
+//            }
         },
         floatingActionButton = {
-            if (shouldShowNavigation) {
+            if (shouldShowBottomNavigation) {
                 BottomFloatingButton(navController)
             }
         },
         isFloatingActionButtonDocked = true,
         floatingActionButtonPosition = FabPosition.Center,
         bottomBar = {
-            if (shouldShowNavigation) {
+            if (shouldShowBottomNavigation) {
                 BottomAppNavigation(navController)
             }
         }
@@ -64,7 +89,9 @@ private fun BottomAppNavigation(navController: NavController = NavController(Loc
         AppScreens.MoneyScreen,
         AppScreens.TimeScreen,
     )
-    BottomAppBar {
+    BottomAppBar(
+        cutoutShape = RoundedCornerShape(50)
+    ) {
         BottomNavigation(
             backgroundColor = CustomMaterialTheme.colors.primaryVariant,
             contentColor = CustomMaterialTheme.colors.onPrimary,
@@ -138,6 +165,34 @@ private fun TopAppNavigation(
                     Icon(
                         painterResource(id = navItem.iconResource),
                         contentDescription = navItem.title,
+                        modifier = Modifier.size(40.dp)
+                    )
+                }
+            }
+        },
+    )
+}
+
+@Composable
+private fun TopAppNavigationWithClose(
+    navController: NavController = NavController(LocalContext.current),
+    currentScreenTitle: String
+) {
+    TopAppBar(
+        backgroundColor = CustomMaterialTheme.colors.primaryVariant,
+        title = {
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(currentScreenTitle)
+                IconButton(onClick = {
+                    navController.popBackStack()
+                }) {
+                    Icon(
+                        painterResource(id = R.drawable.ic_close_24),
+                        contentDescription = "Close",
                         modifier = Modifier.size(40.dp)
                     )
                 }

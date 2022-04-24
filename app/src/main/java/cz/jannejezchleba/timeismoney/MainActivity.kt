@@ -25,7 +25,7 @@ class MainActivity : ComponentActivity() {
 
     @Composable
     fun TimeIsMoneyApp() {
-        Surface(
+     Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colors.background
         ) {

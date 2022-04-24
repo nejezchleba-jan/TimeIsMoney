@@ -1,6 +1,7 @@
 package cz.jannejezchleba.timeismoney.ui.screen.money
 
 import androidx.lifecycle.ViewModel
+import cz.jannejezchleba.timeismoney.util.DataStoreHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -10,7 +11,7 @@ import javax.inject.Inject
 import kotlin.math.roundToInt
 
 @HiltViewModel
-class InfoCollectViewModel @Inject constructor() : ViewModel() {
+class InfoCollectViewModel @Inject constructor(private val dataStoreHelper: DataStoreHelper) : ViewModel() {
     companion object {
         private const val averageWorkDaysInMonth = 21.6
     }
@@ -27,10 +28,28 @@ class InfoCollectViewModel @Inject constructor() : ViewModel() {
     val monthStats: StateFlow<String> = _monthStats
     val yearStats: StateFlow<String> = _yearStats
     val vacationStats: StateFlow<String> = _vacationStats
+    var rawDailyWage = 0
 
     init {
         currencyFormatter.maximumFractionDigits = 0
         currencyFormatter.currency = Currency.getInstance("CZK")
+    }
+
+    suspend fun saveInfo(salary: String,
+                         hourRate: String,
+                         hours: String,
+                         vacation: String,
+                         type: Boolean) {
+        if (type) {
+            dataStoreHelper.saveSalary(salary)
+        } else {
+            dataStoreHelper.saveHourRate(hourRate)
+        }
+        dataStoreHelper.saveHours(hours)
+        dataStoreHelper.saveVacation(vacation)
+        dataStoreHelper.saveSalaryType(type)
+        dataStoreHelper.saveDailyWage(rawDailyWage)
+        dataStoreHelper.saveUserIsNew(false)
     }
 
     fun updateStatistics(
@@ -40,8 +59,8 @@ class InfoCollectViewModel @Inject constructor() : ViewModel() {
         vacation: String,
         type: Boolean
     ) {
-        val countingSalary = if (salary.isBlank()) "0" else salary
-        val countingHourRate = if (hourRate.isBlank()) "0" else hourRate
+        val countingSalary = salary.ifBlank { "0" }
+        val countingHourRate = hourRate.ifBlank { "0" }
         if (hours.isNotBlank()) {
             computeDailySalary(countingSalary, countingHourRate, hours, type)
             computeWeekSalary(countingSalary, countingHourRate, hours, type)
@@ -60,6 +79,7 @@ class InfoCollectViewModel @Inject constructor() : ViewModel() {
         } else {
             hours.toInt() * hourRate.toDouble()
         }
+        rawDailyWage = result.roundToInt()
         _dailyStats.value = currencyFormatter.format(result.roundToInt())
     }
 

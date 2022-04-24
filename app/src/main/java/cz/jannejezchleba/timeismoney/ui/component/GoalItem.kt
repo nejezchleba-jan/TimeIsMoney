@@ -1,34 +1,41 @@
 package cz.jannejezchleba.timeismoney.ui.component
 
+import android.graphics.Bitmap
+import android.graphics.ImageDecoder
+import android.net.Uri
+import android.os.Build
+import android.provider.MediaStore
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.material.Card
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import coil.compose.rememberImagePainter
 import cz.jannejezchleba.timeismoney.R
+import cz.jannejezchleba.timeismoney.data.domain.Goal
 import cz.jannejezchleba.timeismoney.ui.theme.CustomMaterialTheme
-import java.io.File
 
 @Composable
-fun GoalItem(title: String, imagePath: String = "", price: Int, timeLeft: Int) {
-    if (imagePath.isBlank() || !File(imagePath).exists()) {
-        DefaultGoal(title = title, price = price, timeLeft = timeLeft)
+fun GoalItem(goal: Goal = Goal()) {
+    if (goal.imagePath.isBlank()) {
+        DefaultGoal(goal)
     } else {
-        GoalWithImage(title = title, imagePath = imagePath, price = price, timeLeft = timeLeft)
+        GoalWithImage(goal)
     }
 }
 
 @Composable
-private fun DefaultGoal(title: String, price: Int, timeLeft: Int) {
+private fun DefaultGoal(goal: Goal = Goal()) {
     Card(
         elevation = 5.dp,
         backgroundColor = Color.White,
@@ -38,7 +45,7 @@ private fun DefaultGoal(title: String, price: Int, timeLeft: Int) {
             Box(contentAlignment = Alignment.Center) {
                 Image(
                     painter = painterResource(id = R.drawable.default_image),
-                    contentDescription = title
+                    contentDescription = goal.name
                 )
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -48,42 +55,8 @@ private fun DefaultGoal(title: String, price: Int, timeLeft: Int) {
                         .fillMaxWidth()
                         .padding(CustomMaterialTheme.paddings.smallPadding),
                 ) {
-                    OutlinedButton(
-                        onClick = {},
-                        enabled = false,
-                        shape = RoundedCornerShape(50),
-                        border = BorderStroke(1.dp, CustomMaterialTheme.colors.primaryVariant),
-                        colors = ButtonDefaults.buttonColors(disabledContentColor = CustomMaterialTheme.colors.primaryVariant)
-                    ) {
-                        Row(
-                            horizontalArrangement = Arrangement.spacedBy(10.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            Icon(
-                                painter = painterResource(R.drawable.ic_money_24),
-                                contentDescription = "Value",
-                            )
-                            Text(text = price.toString())
-                        }
-                    }
-                    OutlinedButton(
-                        onClick = {},
-                        enabled = false,
-                        shape = RoundedCornerShape(50),
-                        border = BorderStroke(1.dp, CustomMaterialTheme.colors.primaryVariant),
-                        colors = ButtonDefaults.buttonColors(disabledContentColor = CustomMaterialTheme.colors.primaryVariant)
-                    ) {
-                        Row(
-                            horizontalArrangement = Arrangement.spacedBy(10.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            Icon(
-                                painter = painterResource(R.drawable.ic_time_24),
-                                contentDescription = "Currently left",
-                            )
-                            Text(text = "$timeLeft DAYS")
-                        }
-                    }
+                    InfoBubble(goal.price.toString(), R.drawable.ic_money_24)
+                    InfoBubble(goal.time, R.drawable.ic_time_24)
                 }
                 Box(
                     contentAlignment = Alignment.CenterStart,
@@ -99,7 +72,7 @@ private fun DefaultGoal(title: String, price: Int, timeLeft: Int) {
                         .padding(CustomMaterialTheme.paddings.smallPadding),
                 ) {
                     Text(
-                        title,
+                        goal.name,
                         style = CustomMaterialTheme.typography.h4,
                         color = CustomMaterialTheme.colors.primaryVariant
                     )
@@ -111,16 +84,38 @@ private fun DefaultGoal(title: String, price: Int, timeLeft: Int) {
 }
 
 @Composable
-private fun GoalWithImage(title: String, imagePath: String, price: Int, timeLeft: Int) {
+private fun GoalWithImage(goal: Goal = Goal()) {
+    val bitmap: Bitmap?
+    val currentContentResolver = LocalContext.current.contentResolver
+    goal.imagePath.let {
+        val uri = Uri.parse(it)
+        bitmap = if (Build.VERSION.SDK_INT < 28) {
+            MediaStore.Images
+                .Media.getBitmap(currentContentResolver, uri)
+        } else {
+            val source = ImageDecoder
+                .createSource(currentContentResolver, uri)
+            ImageDecoder.decodeBitmap(source)
+        }
+    }
     Card(
         elevation = 5.dp,
     ) {
         Column {
             Box(contentAlignment = Alignment.Center) {
-                Image(
-                    painter = rememberImagePainter(imagePath),
-                    contentDescription = title
-                )
+                if (bitmap != null) {
+                    Image(
+                        bitmap = bitmap.asImageBitmap(),
+                        contentScale = ContentScale.Inside,
+                        contentDescription = goal.name
+                    )
+                } else {
+                    Image(
+                        painter = painterResource(id = R.drawable.example_img),
+                        contentDescription = goal.name,
+                        contentScale = ContentScale.Inside
+                    )
+                }
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -129,42 +124,8 @@ private fun GoalWithImage(title: String, imagePath: String, price: Int, timeLeft
                         .fillMaxWidth()
                         .padding(CustomMaterialTheme.paddings.smallPadding),
                 ) {
-                    OutlinedButton(
-                        onClick = {},
-                        enabled = false,
-                        shape = RoundedCornerShape(50),
-                        border = BorderStroke(1.dp, CustomMaterialTheme.colors.primaryVariant),
-                        colors = ButtonDefaults.buttonColors(disabledContentColor = CustomMaterialTheme.colors.primaryVariant)
-                    ) {
-                        Row(
-                            horizontalArrangement = Arrangement.spacedBy(10.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            Icon(
-                                painter = painterResource(R.drawable.ic_money_24),
-                                contentDescription = "Value",
-                            )
-                            Text(text = price.toString())
-                        }
-                    }
-                    OutlinedButton(
-                        onClick = {},
-                        enabled = false,
-                        shape = RoundedCornerShape(50),
-                        border = BorderStroke(1.dp, CustomMaterialTheme.colors.primaryVariant),
-                        colors = ButtonDefaults.buttonColors(disabledContentColor = CustomMaterialTheme.colors.primaryVariant)
-                    ) {
-                        Row(
-                            horizontalArrangement = Arrangement.spacedBy(10.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            Icon(
-                                painter = painterResource(R.drawable.ic_time_24),
-                                contentDescription = "Currently left",
-                            )
-                            Text(text = "$timeLeft DAYS")
-                        }
-                    }
+                    InfoBubble(goal.price.toString(), R.drawable.ic_money_24)
+                    InfoBubble(goal.time, R.drawable.ic_time_24)
                 }
                 Box(
                     contentAlignment = Alignment.CenterStart,
@@ -174,13 +135,13 @@ private fun GoalWithImage(title: String, imagePath: String, price: Int, timeLeft
                         .background(
                             Brush.verticalGradient(
                                 0F to Color.Transparent,
-                                1F to Color.Gray
+                                1F to Color.Black
                             )
                         )
                         .padding(CustomMaterialTheme.paddings.smallPadding),
                 ) {
                     Text(
-                        title,
+                        goal.name,
                         style = CustomMaterialTheme.typography.h4,
                         color = Color.White
                     )

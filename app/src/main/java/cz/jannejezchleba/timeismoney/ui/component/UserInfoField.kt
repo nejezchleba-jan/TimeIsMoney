@@ -25,7 +25,7 @@ fun UserInfoField(
     value: String,
     iconLeading: Int,
     iconDesc: String,
-    textTrailing: String,
+    textTrailing: String = "",
     onChange: (String) -> Unit
 ) {
     val kc = LocalSoftwareKeyboardController.current

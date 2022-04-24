@@ -15,6 +15,7 @@ data class Goal(
 
     var name: String = "",
     var price: Int = 0,
+    var time: String = "0 DAYS",
     var imagePath: String = "",
     var currency: String = "CZK",
     var dateCreated: String = LocalDate.now().toString(),

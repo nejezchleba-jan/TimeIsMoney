@@ -2,10 +2,7 @@ package cz.jannejezchleba.timeismoney.util
 
 import android.content.Context
 import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.booleanPreferencesKey
-import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.core.*
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -19,6 +16,7 @@ class DataStoreHelper(private val context: Context) {
         val USER_WORK_HOURS= stringPreferencesKey("user_work_hours")
         val USER_HOUR_RATE= stringPreferencesKey("user_hours_rate")
         val USER_SALARY_TYPE= booleanPreferencesKey("user_salary_type")
+        val USER_DAILY_WAGE= intPreferencesKey("user_daily_wage")
     }
 
     val getUserIsNew: Flow<Boolean?> = context.dataStore.data
@@ -84,6 +82,17 @@ class DataStoreHelper(private val context: Context) {
     suspend fun saveSalaryType(isSalary: Boolean) {
         context.dataStore.edit { preferences ->
             preferences[USER_SALARY_TYPE] = isSalary
+        }
+    }
+
+    val getDailyWage: Flow<Int?> = context.dataStore.data
+        .map { preferences ->
+            preferences[USER_DAILY_WAGE] ?: 0
+        }
+
+    suspend fun saveDailyWage(wage: Int) {
+        context.dataStore.edit { preferences ->
+            preferences[USER_DAILY_WAGE] = wage
         }
     }
 }

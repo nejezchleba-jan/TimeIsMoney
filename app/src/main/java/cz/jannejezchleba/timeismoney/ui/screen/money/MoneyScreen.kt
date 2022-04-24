@@ -14,7 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import cz.jannejezchleba.timeismoney.R
 import cz.jannejezchleba.timeismoney.ui.component.HeaderCard
@@ -30,7 +30,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun MoneyScreen(
     navController: NavHostController = NavHostController(LocalContext.current),
-    viewModel: InfoCollectViewModel = viewModel()
+    viewModel: InfoCollectViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -121,7 +121,7 @@ fun MoneyScreen(
                     "Your monthly salary",
                     "20000",
                     salaryField,
-                    R.drawable.ic_money_24,
+                    R.drawable.ic_price_24,
                     "Salary",
                     "Kč"
                 ) {
@@ -142,7 +142,7 @@ fun MoneyScreen(
                     "Your hourly wage",
                     "180",
                     hourlyField,
-                    R.drawable.ic_money_24,
+                    R.drawable.ic_price_24,
                     "Salary",
                     "Kč/h"
                 ) {
@@ -220,6 +220,7 @@ fun MoneyScreen(
                     StatisticsItem("Vacation value (avg.)", vacationStats)
                 }
             }
+            Spacer(modifier = Modifier.height(80.dp))
         }
     }
 }

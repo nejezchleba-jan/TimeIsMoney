@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import cz.jannejezchleba.timeismoney.data.db.GoalRoomDatabase
 import cz.jannejezchleba.timeismoney.data.domain.interfaces.GoalDao
+import cz.jannejezchleba.timeismoney.util.DataStoreHelper
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -28,4 +29,8 @@ object AppModule {
     @Singleton
     @Provides
     fun provideGoalDao(db: GoalRoomDatabase): GoalDao = db.getGoalDao()
+
+    @Singleton
+    @Provides
+    fun providesDataStoreHelper( @ApplicationContext app: Context): DataStoreHelper = DataStoreHelper(app)
 }

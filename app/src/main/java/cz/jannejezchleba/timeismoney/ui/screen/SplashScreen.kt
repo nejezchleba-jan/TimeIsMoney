@@ -38,10 +38,10 @@ fun SplashScreen(navController: NavHostController) {
         animationSpec = tween(durationMillis = 1000)
     )
 
+
     LaunchedEffect(key1 = true) {
         startAnimation = true
         delay(1000)
-//        navController.backQueue.clear()
         if (firstTimeAppStart.value!!) {
             navController.navigate(AppScreens.InfoCollectScreen.name)
         } else {

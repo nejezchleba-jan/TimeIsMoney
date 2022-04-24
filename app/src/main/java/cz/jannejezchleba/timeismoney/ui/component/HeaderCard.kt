@@ -18,7 +18,7 @@ fun HeaderCard(title: String = "") {
         modifier = Modifier.fillMaxWidth(),
         elevation = 5.dp,
         shape = RoundedCornerShape(50),
-        border = BorderStroke(1.dp, color = CustomMaterialTheme.colors.primary)
+        border = BorderStroke(2.dp, color = CustomMaterialTheme.colors.primary)
     ) {
         Text(
             title,
