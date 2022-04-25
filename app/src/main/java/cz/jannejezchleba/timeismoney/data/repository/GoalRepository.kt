@@ -1,17 +1,18 @@
 package cz.jannejezchleba.timeismoney.data.repository
 
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import cz.jannejezchleba.timeismoney.data.domain.Goal
 import cz.jannejezchleba.timeismoney.data.domain.interfaces.GoalDao
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
 class GoalRepository @Inject constructor(private val goalDao: GoalDao) {
     val allGoals: LiveData<List<Goal>> = goalDao.getAllGoals()
     val allPinnedGoals: LiveData<List<Goal>> = goalDao.getAllPinnedGoals()
-    val selectedGoal = MutableLiveData<Goal?>(null)
 
     private val coroutineScope = CoroutineScope(Dispatchers.Main)
 
@@ -39,12 +40,12 @@ class GoalRepository @Inject constructor(private val goalDao: GoalDao) {
         }
     }
 
-   suspend fun getGoal(id: Int) {
-        selectedGoal.value = asyncFind(id).await()
+   suspend fun getGoal(id: Int): Goal? {
+        return asyncFind(id)
     }
 
-    private fun asyncFind(id: Int): Deferred<Goal?> =
+    private suspend fun asyncFind(id: Int): Goal? =
         coroutineScope.async(Dispatchers.IO) {
             return@async goalDao.findGoal(id)
-        }
+        }.await()
 }

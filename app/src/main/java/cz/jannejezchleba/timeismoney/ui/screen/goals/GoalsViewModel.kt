@@ -7,8 +7,6 @@ import androidx.lifecycle.viewModelScope
 import cz.jannejezchleba.timeismoney.data.domain.Goal
 import cz.jannejezchleba.timeismoney.data.repository.GoalRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.text.DecimalFormat
 import javax.inject.Inject
@@ -17,10 +15,11 @@ import javax.inject.Inject
 class GoalsViewModel @Inject constructor(private val repository: GoalRepository) : ViewModel() {
     val allGoals: LiveData<List<Goal>> = repository.allGoals
     val pinnedGoals: LiveData<List<Goal>> = repository.allPinnedGoals
-    val selectedGoal: MutableLiveData<Goal?> = repository.selectedGoal
+    private val _selectedGoal: MutableLiveData<Goal?> = MutableLiveData(null)
+    val selectedGoal: LiveData<Goal?> = _selectedGoal
 
-    private var _computedTime = MutableStateFlow("0 DAYS")
-    val computedTime: StateFlow<String> = _computedTime
+        private var _computedTime = MutableLiveData("0 DAYS")
+    val computedTime: LiveData<String> = _computedTime
 
     fun computeTimeForGoal(dailyWage: Int, price: Double) {
         if (dailyWage == 0 || price == 0.0) _computedTime.value = "0 DAYS"
@@ -41,23 +40,32 @@ class GoalsViewModel @Inject constructor(private val repository: GoalRepository)
 
     fun getGoal(id: Int) {
         viewModelScope.launch {
-            repository.getGoal(id)
+            val goal = repository.getGoal(id)
+            _selectedGoal.value = goal
         }
     }
 
     fun pinGoal(id: Int) {
-        repository.changedPinGoal(id, true)
+        viewModelScope.launch {
+            repository.changedPinGoal(id, true)
+        }
     }
 
     fun unpinGoal(id: Int) {
-        repository.changedPinGoal(id, false)
+        viewModelScope.launch {
+            repository.changedPinGoal(id, false)
+        }
     }
 
     fun updateGoal(goal: Goal) {
-        repository.updateGoal(goal)
+        viewModelScope.launch {
+            repository.updateGoal(goal)
+        }
     }
 
     fun deleteGoal(id: Int) {
-        repository.deleteGoal(id)
+        viewModelScope.launch {
+            repository.deleteGoal(id)
+        }
     }
 }

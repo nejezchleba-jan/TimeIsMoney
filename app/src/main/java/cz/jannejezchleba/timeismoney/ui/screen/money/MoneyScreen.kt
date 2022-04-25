@@ -9,6 +9,7 @@ import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -48,11 +49,11 @@ fun MoneyScreen(
     var hoursField by remember { mutableStateOf("") }
     var vacationField by remember { mutableStateOf("") }
 
-    val dailyStats by viewModel.dailyStats.collectAsState()
-    val weekStats by viewModel.weekStats.collectAsState()
-    val monthStats by viewModel.monthStats.collectAsState()
-    val yearStats by viewModel.yearStats.collectAsState()
-    val vacationStats by viewModel.vacationStats.collectAsState()
+    val dailyStats by viewModel.dailyStats.observeAsState()
+    val weekStats by viewModel.weekStats.observeAsState()
+    val monthStats by viewModel.monthStats.observeAsState()
+    val yearStats by viewModel.yearStats.observeAsState()
+    val vacationStats by viewModel.vacationStats.observeAsState()
 
     var salaryType by remember { mutableStateOf(true) }
 
@@ -100,6 +101,7 @@ fun MoneyScreen(
                     )
                     scope.launch {
                         dataStore.saveSalaryType(salaryType)
+                        viewModel.saveDailyWage()
                     }
                 }
                 SwitchButton("MONTHLY", true, salaryType) {
@@ -113,6 +115,7 @@ fun MoneyScreen(
                     )
                     scope.launch {
                         dataStore.saveSalaryType(salaryType)
+                        viewModel.saveDailyWage()
                     }
                 }
             }
@@ -135,6 +138,7 @@ fun MoneyScreen(
                     )
                     scope.launch {
                         dataStore.saveSalary(it)
+                        viewModel.saveDailyWage()
                     }
                 }
             } else {
@@ -156,6 +160,7 @@ fun MoneyScreen(
                     )
                     scope.launch {
                         dataStore.saveHourRate(it)
+                        viewModel.saveDailyWage()
                     }
                 }
             }
@@ -177,6 +182,7 @@ fun MoneyScreen(
                 )
                 scope.launch {
                     dataStore.saveHours(it)
+                    viewModel.saveDailyWage()
                 }
             }
             UserInfoField(
@@ -213,11 +219,11 @@ fun MoneyScreen(
                     verticalArrangement = Arrangement.spacedBy(10.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    StatisticsItem("Daily rate (avg.)", dailyStats)
-                    StatisticsItem("Weekly rate (avg.)", weekStats)
-                    StatisticsItem("Monthly rate (avg.)", monthStats)
-                    StatisticsItem("Yearly rate (avg.)", yearStats)
-                    StatisticsItem("Vacation value (avg.)", vacationStats)
+                    StatisticsItem("Daily rate (avg.)", dailyStats!!)
+                    StatisticsItem("Weekly rate (avg.)", weekStats!!)
+                    StatisticsItem("Monthly rate (avg.)", monthStats!!)
+                    StatisticsItem("Yearly rate (avg.)", yearStats!!)
+                    StatisticsItem("Vacation value (avg.)", vacationStats!!)
                 }
             }
             Spacer(modifier = Modifier.height(80.dp))

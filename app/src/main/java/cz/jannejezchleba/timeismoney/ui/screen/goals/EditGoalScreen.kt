@@ -6,6 +6,7 @@ import android.graphics.ImageDecoder
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -20,6 +21,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -53,10 +55,10 @@ fun EditGoalScreen(
     goalId: Int
 ) {
     val scope = rememberCoroutineScope()
+    viewModel.getGoal(goalId)
     val editedGoal by viewModel.selectedGoal.observeAsState()
-    var nameField by remember{ mutableStateOf("")}
-    var priceField by remember{ mutableStateOf("")}
-
+    var nameField by rememberSaveable{ mutableStateOf("")}
+    var priceField by rememberSaveable{ mutableStateOf("")}
 
 
     //Loading data
@@ -89,6 +91,24 @@ fun EditGoalScreen(
     LaunchedEffect(editedGoal) {
         nameField = editedGoal?.name ?: ""
         priceField = editedGoal?.price.toString()
+        if (editedGoal?.imagePath != null) {
+            imageUri = Uri.parse(editedGoal?.imagePath)
+        }
+    }
+
+    LaunchedEffect(imageUri) {
+        if (imageUri != null && imageUri.toString().isNotBlank()) {
+            Log.d("URI", "EditGoalScreen: $imageUri")
+            if (Build.VERSION.SDK_INT < 28) {
+                bitmap.value = MediaStore.Images
+                    .Media.getBitmap(context.contentResolver, imageUri!!)
+
+            } else {
+                val source = ImageDecoder
+                    .createSource(context.contentResolver, imageUri!!)
+                bitmap.value = ImageDecoder.decodeBitmap(source)
+            }
+        }
     }
 
     Surface(
@@ -141,13 +161,14 @@ fun EditGoalScreen(
                     value = priceField,
                     onChange = {
                         priceField = it
-                        editedGoal?.price= it.toInt()
                         if (it.isNotBlank()) {
+                            editedGoal?.price= it.toInt()
                             viewModel.computeTimeForGoal(
                                 savedDailyWage.value!!,
                                 priceField.toDouble()
                             )
                         } else {
+                            editedGoal?.price = 0
                             viewModel.computeTimeForGoal(
                                 savedDailyWage.value!!,
                                 0.0
@@ -157,7 +178,7 @@ fun EditGoalScreen(
                 )
                 InfoBubble(editedGoal?.time ?: "0 DAYS", R.drawable.ic_time_24)
                 HeaderCard("GOAL IMAGE")
-                if (imageUri == null) {
+                if (imageUri.toString().isBlank()) {
                     Card(
                         backgroundColor = Color.White,
                         contentColor = Color.White,
@@ -184,24 +205,12 @@ fun EditGoalScreen(
                             },
                         elevation = 0.dp
                     ) {
-                        imageUri?.let {
-                            if (Build.VERSION.SDK_INT < 28) {
-                                bitmap.value = MediaStore.Images
-                                    .Media.getBitmap(context.contentResolver, it)
-
-                            } else {
-                                val source = ImageDecoder
-                                    .createSource(context.contentResolver, it)
-                                bitmap.value = ImageDecoder.decodeBitmap(source)
-                            }
-
-                            bitmap.value?.let { btm ->
-                                Image(
-                                    bitmap = btm.asImageBitmap(),
-                                    contentScale = ContentScale.Inside,
-                                    contentDescription = null
-                                )
-                            }
+                        bitmap.value?.let { btm ->
+                            Image(
+                                bitmap = btm.asImageBitmap(),
+                                contentScale = ContentScale.Inside,
+                                contentDescription = null
+                            )
                         }
                     }
                 }
@@ -212,7 +221,12 @@ fun EditGoalScreen(
                         .padding(5.dp),
                     shape = RoundedCornerShape(50),
                     onClick = {
-                        editedGoal?.imagePath = imageUri.toString()
+                        val imagePath = if (imageUri == null) {
+                            ""
+                        } else {
+                            imageUri.toString()
+                        }
+                        editedGoal?.imagePath = imagePath
                         viewModel.updateGoal(editedGoal!!)
                         Toast.makeText(
                             context,

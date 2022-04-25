@@ -60,7 +60,7 @@ fun GoalScreen(
 
                 items(allGoals!!) { item ->
                     val onEdit = {
-                        viewModel.getGoal(item.id!!)
+//                        viewModel.getGoal(item.id!!)
                         navController.navigate(AppScreens.EditGoalScreen.name + "/" + item.id)
                     }
                     val onPin = {

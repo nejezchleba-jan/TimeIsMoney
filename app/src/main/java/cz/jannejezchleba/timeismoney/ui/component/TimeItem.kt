@@ -175,7 +175,7 @@ private fun TimeItemWithImage(
             verticalArrangement = Arrangement.spacedBy(0.dp),
             modifier = Modifier.background(Color.Transparent)
         ) {
-            Box {
+            Box(contentAlignment = Alignment.Center) {
                 if (bitmap != null) {
                     Image(
                         bitmap = bitmap.asImageBitmap(),

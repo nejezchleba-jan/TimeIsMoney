@@ -19,6 +19,8 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -55,14 +57,14 @@ fun AddGoalScreen(
 ) {
     val scope = rememberCoroutineScope()
 
-    var nameField by remember { mutableStateOf("") }
-    var priceField by remember { mutableStateOf("") }
+    var nameField by rememberSaveable { mutableStateOf("") }
+    var priceField by rememberSaveable { mutableStateOf("") }
 
     //Loading data
     val dataStore = DataStoreHelper(LocalContext.current)
     val savedDailyWage = dataStore.getDailyWage.collectAsState(initial = 0)
 
-    val computedTime by viewModel.computedTime.collectAsState()
+    val computedTime by viewModel.computedTime.observeAsState()
 
     val kc = LocalSoftwareKeyboardController.current
 
@@ -163,7 +165,7 @@ fun AddGoalScreen(
                     }
                 }
             )
-            InfoBubble(computedTime, R.drawable.ic_time_24)
+            InfoBubble(computedTime!!, R.drawable.ic_time_24)
             HeaderCard("GOAL IMAGE")
             if (imageUri == null) {
                 Card(
@@ -217,7 +219,7 @@ fun AddGoalScreen(
                     viewModel.saveGoal(
                         nameField,
                         priceField.toInt(),
-                        computedTime,
+                        computedTime!!,
                         imagePath
                     )
                     Toast.makeText(

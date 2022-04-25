@@ -1,10 +1,10 @@
 package cz.jannejezchleba.timeismoney.ui.screen.money
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import cz.jannejezchleba.timeismoney.util.DataStoreHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import java.text.NumberFormat
 import java.util.*
 import javax.inject.Inject
@@ -17,18 +17,19 @@ class InfoCollectViewModel @Inject constructor(private val dataStoreHelper: Data
     }
 
     private val currencyFormatter: NumberFormat = NumberFormat.getCurrencyInstance()
+    private var rawDailyWage = 0
 
-    private var _dailyStats = MutableStateFlow("0")
-    private var _weekStats = MutableStateFlow("0")
-    private var _monthStats = MutableStateFlow("0")
-    private var _yearStats = MutableStateFlow("0")
-    private var _vacationStats = MutableStateFlow("0")
-    val dailyStats: StateFlow<String> = _dailyStats
-    val weekStats: StateFlow<String> = _weekStats
-    val monthStats: StateFlow<String> = _monthStats
-    val yearStats: StateFlow<String> = _yearStats
-    val vacationStats: StateFlow<String> = _vacationStats
-    var rawDailyWage = 0
+    private var _dailyStats = MutableLiveData("0")
+    private var _weekStats = MutableLiveData("0")
+    private var _monthStats = MutableLiveData("0")
+    private var _yearStats = MutableLiveData("0")
+    private var _vacationStats = MutableLiveData("0")
+    val dailyStats: LiveData<String> = _dailyStats
+    val weekStats: LiveData<String> = _weekStats
+    val monthStats: LiveData<String> = _monthStats
+    val yearStats: LiveData<String> = _yearStats
+    val vacationStats: LiveData<String> = _vacationStats
+
 
     init {
         currencyFormatter.maximumFractionDigits = 0
@@ -50,6 +51,10 @@ class InfoCollectViewModel @Inject constructor(private val dataStoreHelper: Data
         dataStoreHelper.saveSalaryType(type)
         dataStoreHelper.saveDailyWage(rawDailyWage)
         dataStoreHelper.saveUserIsNew(false)
+    }
+
+    suspend fun saveDailyWage() {
+        dataStoreHelper.saveDailyWage(rawDailyWage)
     }
 
     fun updateStatistics(
