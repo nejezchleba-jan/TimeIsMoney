@@ -36,6 +36,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import cz.jannejezchleba.timeismoney.R
 import cz.jannejezchleba.timeismoney.ui.component.HeaderCard
+import cz.jannejezchleba.timeismoney.ui.component.InfoBubble
 import cz.jannejezchleba.timeismoney.ui.component.UserInfoField
 import cz.jannejezchleba.timeismoney.ui.navigation.AppScreens
 import cz.jannejezchleba.timeismoney.ui.styles.customButtonColors
@@ -46,13 +47,16 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun EditGoalScreen(navController: NavHostController = NavHostController(LocalContext.current),
-                   viewModel: GoalsViewModel = hiltViewModel(),
-                   goalId: Int
+fun EditGoalScreen(
+    navController: NavHostController = NavHostController(LocalContext.current),
+    viewModel: GoalsViewModel = hiltViewModel(),
+    goalId: Int
 ) {
     val scope = rememberCoroutineScope()
-    val editedGoal by viewModel.goal.observeAsState()
-    var loading by remember { mutableStateOf(true)}
+    val editedGoal by viewModel.selectedGoal.observeAsState()
+    var nameField by remember{ mutableStateOf("")}
+    var priceField by remember{ mutableStateOf("")}
+
 
 
     //Loading data
@@ -73,17 +77,18 @@ fun EditGoalScreen(navController: NavHostController = NavHostController(LocalCon
         contract =
         ActivityResultContracts.OpenDocument()
     ) { uri: Uri? ->
-        context.contentResolver.takePersistableUriPermission(
-            uri!!,
-            Intent.FLAG_GRANT_READ_URI_PERMISSION
-        )
-        imageUri = uri
+        if (uri != null) {
+            context.contentResolver.takePersistableUriPermission(
+                uri,
+                Intent.FLAG_GRANT_READ_URI_PERMISSION
+            )
+            imageUri = uri
+        }
     }
 
-    LaunchedEffect(goalId) {
-        loading = true
-        viewModel.getGoal(goalId)
-        loading = false
+    LaunchedEffect(editedGoal) {
+        nameField = editedGoal?.name ?: ""
+        priceField = editedGoal?.price.toString()
     }
 
     Surface(
@@ -99,15 +104,15 @@ fun EditGoalScreen(navController: NavHostController = NavHostController(LocalCon
             verticalArrangement = Arrangement.spacedBy(10.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-
-            if (loading) {
-                CircularProgressIndicator()
+            if (editedGoal == null) {
+                CircularProgressIndicator(color = CustomMaterialTheme.colors.primaryVariant, strokeWidth = 2.dp)
             } else {
                 HeaderCard("GOAL INFO")
                 OutlinedTextField(
                     modifier = Modifier.fillMaxWidth(),
-                    value = editedGoal?.name ?: "",
+                    value = nameField,
                     onValueChange = {
+                        nameField = it
                         editedGoal?.name = it
                     },
                     label = { Text(text = "Goal name", textAlign = TextAlign.End) },
@@ -133,13 +138,14 @@ fun EditGoalScreen(navController: NavHostController = NavHostController(LocalCon
                     placeholder = "200",
                     iconLeading = R.drawable.ic_price_24,
                     iconDesc = "Price",
-                    value = editedGoal?.price.toString(),
+                    value = priceField,
                     onChange = {
-                        editedGoal?.price = it.toInt()
+                        priceField = it
+                        editedGoal?.price= it.toInt()
                         if (it.isNotBlank()) {
                             viewModel.computeTimeForGoal(
                                 savedDailyWage.value!!,
-                                editedGoal?.price!!.toDouble()
+                                priceField.toDouble()
                             )
                         } else {
                             viewModel.computeTimeForGoal(
@@ -149,7 +155,7 @@ fun EditGoalScreen(navController: NavHostController = NavHostController(LocalCon
                         }
                     },
                 )
-               // InfoBubble(editedGoal?.time!!, R.drawable.ic_time_24)
+                InfoBubble(editedGoal?.time ?: "0 DAYS", R.drawable.ic_time_24)
                 HeaderCard("GOAL IMAGE")
                 if (imageUri == null) {
                     Card(
@@ -205,8 +211,8 @@ fun EditGoalScreen(navController: NavHostController = NavHostController(LocalCon
                         .fillMaxWidth()
                         .padding(5.dp),
                     shape = RoundedCornerShape(50),
-
                     onClick = {
+                        editedGoal?.imagePath = imageUri.toString()
                         viewModel.updateGoal(editedGoal!!)
                         Toast.makeText(
                             context,
@@ -222,5 +228,4 @@ fun EditGoalScreen(navController: NavHostController = NavHostController(LocalCon
             }
         }
     }
-
 }

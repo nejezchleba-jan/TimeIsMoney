@@ -52,13 +52,13 @@ private fun DefaultTimeItem(
     onDelete: () -> Unit
 ) {
     Card(
-        modifier = Modifier.background(Color.White),
+        modifier = Modifier.background(Color.Transparent),
         elevation = 5.dp,
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(0.dp),
-            modifier = Modifier.background(Color.Transparent)
+            modifier = Modifier.background(Color.White)
         ) {
             Box(contentAlignment = Alignment.Center) {
                 Image(
@@ -85,7 +85,7 @@ private fun DefaultTimeItem(
                         .background(
                             Brush.verticalGradient(
                                 0F to Color.Transparent,
-                                1F to Color.Black
+                                1F to Color.Gray
                             )
                         )
                         .padding(CustomMaterialTheme.paddings.smallPadding),
@@ -93,7 +93,7 @@ private fun DefaultTimeItem(
                     Text(
                         goal.name,
                         style = CustomMaterialTheme.typography.h4,
-                        color = Color.White
+                        color = CustomMaterialTheme.colors.primaryVariant
                     )
                 }
             }
@@ -184,7 +184,7 @@ private fun TimeItemWithImage(
                     )
                 } else {
                     Image(
-                        painter = painterResource(id = R.drawable.example_img),
+                        painter = painterResource(id = R.drawable.default_image),
                         contentDescription = goal.name,
                         contentScale = ContentScale.Inside
                     )

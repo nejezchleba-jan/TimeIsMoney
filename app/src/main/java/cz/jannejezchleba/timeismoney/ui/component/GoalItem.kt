@@ -111,7 +111,7 @@ private fun GoalWithImage(goal: Goal = Goal()) {
                     )
                 } else {
                     Image(
-                        painter = painterResource(id = R.drawable.example_img),
+                        painter = painterResource(id = R.drawable.default_image),
                         contentDescription = goal.name,
                         contentScale = ContentScale.Inside
                     )

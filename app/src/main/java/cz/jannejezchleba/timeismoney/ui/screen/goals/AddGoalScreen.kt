@@ -78,12 +78,29 @@ fun AddGoalScreen(
         contract =
         ActivityResultContracts.OpenDocument()
     ) { uri: Uri? ->
-        context.contentResolver.takePersistableUriPermission(
-            uri!!,
-            Intent.FLAG_GRANT_READ_URI_PERMISSION
-        )
-        imageUri = uri
+        if (uri != null) {
+            context.contentResolver.takePersistableUriPermission(
+                uri,
+                Intent.FLAG_GRANT_READ_URI_PERMISSION
+            )
+            imageUri = uri
+        }
     }
+
+    LaunchedEffect(imageUri) {
+        imageUri?.let {
+            if (Build.VERSION.SDK_INT < 28) {
+                bitmap.value = MediaStore.Images
+                    .Media.getBitmap(context.contentResolver, it)
+
+            } else {
+                val source = ImageDecoder
+                    .createSource(context.contentResolver, it)
+                bitmap.value = ImageDecoder.decodeBitmap(source)
+            }
+        }
+    }
+
 
 
 
@@ -175,24 +192,12 @@ fun AddGoalScreen(
                         },
                     elevation = 0.dp
                 ) {
-                    imageUri?.let {
-                        if (Build.VERSION.SDK_INT < 28) {
-                            bitmap.value = MediaStore.Images
-                                .Media.getBitmap(context.contentResolver, it)
-
-                        } else {
-                            val source = ImageDecoder
-                                .createSource(context.contentResolver, it)
-                            bitmap.value = ImageDecoder.decodeBitmap(source)
-                        }
-
-                        bitmap.value?.let { btm ->
-                            Image(
-                                bitmap = btm.asImageBitmap(),
-                                contentScale = ContentScale.Inside,
-                                contentDescription = null
-                            )
-                        }
+                    if (bitmap.value != null) {
+                        Image(
+                            bitmap = bitmap.value!!.asImageBitmap(),
+                            contentScale = ContentScale.Inside,
+                            contentDescription = null
+                        )
                     }
                 }
             }

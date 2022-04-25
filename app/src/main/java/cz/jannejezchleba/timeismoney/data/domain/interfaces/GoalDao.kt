@@ -19,7 +19,7 @@ interface GoalDao {
     fun changedPinGoal(id: Int, isPinned: Boolean)
 
     @Query("SELECT * FROM goals WHERE goalId = :id")
-    fun findGoal(id: Int): LiveData<Goal>
+    fun findGoal(id: Int): Goal?
 
     @Query("DELETE FROM goals WHERE goalId = :id")
     fun deleteGoal(id: Int)

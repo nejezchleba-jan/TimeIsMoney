@@ -29,7 +29,7 @@ fun AppNavigation() {
         AppScreens.SplashScreen.name -> false
         AppScreens.InfoCollectScreen.name -> false
         AppScreens.AddGoalScreen.name -> false
-        AppScreens.EditGoalScreen.name -> false
+        AppScreens.EditGoalScreen.name + "/{goalId}" -> false
         else -> true
     }
 
@@ -37,13 +37,13 @@ fun AppNavigation() {
         AppScreens.SplashScreen.name -> false
         AppScreens.InfoCollectScreen.name -> false
         AppScreens.AddGoalScreen.name -> false
-        AppScreens.EditGoalScreen.name -> false
+        AppScreens.EditGoalScreen.name + "/{goalId}" -> false
         else -> true
     }
 
     val shouldShowTopNavigationWithClose = when (navBackStackEntry?.destination?.route) {
         AppScreens.AddGoalScreen.name -> true
-        AppScreens.EditGoalScreen.name -> true
+        AppScreens.EditGoalScreen.name + "/{goalId}" -> true
         else -> false
     }
 

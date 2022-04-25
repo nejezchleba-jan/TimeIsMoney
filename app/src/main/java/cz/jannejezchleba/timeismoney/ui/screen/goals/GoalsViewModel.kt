@@ -17,15 +17,10 @@ import javax.inject.Inject
 class GoalsViewModel @Inject constructor(private val repository: GoalRepository) : ViewModel() {
     val allGoals: LiveData<List<Goal>> = repository.allGoals
     val pinnedGoals: LiveData<List<Goal>> = repository.allPinnedGoals
+    val selectedGoal: MutableLiveData<Goal?> = repository.selectedGoal
 
     private var _computedTime = MutableStateFlow("0 DAYS")
     val computedTime: StateFlow<String> = _computedTime
-
-    private var _isLoading = MutableStateFlow(false)
-    val isLoading: StateFlow<Boolean> = _isLoading
-
-    private var _goal = MutableLiveData<Goal?>(null)
-    var goal: LiveData<Goal?> = _goal
 
     fun computeTimeForGoal(dailyWage: Int, price: Double) {
         if (dailyWage == 0 || price == 0.0) _computedTime.value = "0 DAYS"
@@ -46,7 +41,7 @@ class GoalsViewModel @Inject constructor(private val repository: GoalRepository)
 
     fun getGoal(id: Int) {
         viewModelScope.launch {
-            _goal.value = repository.findGoal(id).value
+            repository.getGoal(id)
         }
     }
 
